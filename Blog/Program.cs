@@ -1,5 +1,5 @@
 ﻿using Blog.Models;
-using Dapper.Contrib.Extensions;
+using Blog.Repositories;
 using Microsoft.Data.SqlClient;
 using System;
 
@@ -11,34 +11,42 @@ namespace Blog
 
         static void Main(string[] args)
         {
-            ReadUsers();
+            var connection = new SqlConnection(CONNECTION_STRING);
+            connection.Open();
+
+            ReadUsersWithRoles(connection);
+
             Console.ReadKey();
+
+            connection.Close();
         }
 
-        public static void ReadUsers()
+        static void ReadUsersWithRoles(SqlConnection connection)
         {
-            using (var connection = new SqlConnection(CONNECTION_STRING))
-            {
-                var users = connection.GetAll<User>();
+            var userRepository = new UserRepository(connection);
+            var users = userRepository.GetWithRoles();
 
-                foreach (var user in users)
+            foreach (var user in users)
+            {
+                Console.WriteLine(user.Name);
+
+                foreach (var role in user.Roles)
                 {
-                    Console.WriteLine(user.Name);
+                    Console.WriteLine(role.Name);
                 }
             }
         }
 
-        public static void ReadUser(int id)
+        static void ReadRoles(SqlConnection connection)
         {
-            using (var connection = new SqlConnection(CONNECTION_STRING))
-            {
-                var user = connection.Get<User>(id);
+            var repository = new Repository<Role>(connection);
+            var roles = repository.Get();
 
-                Console.WriteLine(user.Name);
-            }
+            foreach (var role in roles)
+                Console.WriteLine(role.Name);
         }
 
-        public static void CreateUser()
+        static void CreateUser(SqlConnection connection)
         {
             var user = new User()
             {
@@ -50,48 +58,8 @@ namespace Blog
                 Slug = "equipe-teste"
             };
 
-            using (var connection = new SqlConnection(CONNECTION_STRING))
-            {
-                var rowsAffecteds = connection.Insert<User>(user);
-
-                Console.WriteLine($"Linhas afetadas: {rowsAffecteds}");
-            }
-        }
-
-        public static void UpdateUser(int id)
-        {
-            var user = new User()
-            {
-                Id = id,
-                Name = "Teste da Silva 2",
-                Email = "teste2@teste.com.br",
-                Bio = "Equipe TESTE 2",
-                Image = "https://www.google.com.br",
-                PasswordHash = "HASH",
-                Slug = "equipe-teste-2"
-            };
-
-            using (var connection = new SqlConnection(CONNECTION_STRING))
-            {
-                var rowsAffecteds = connection.Update<User>(user);
-
-                Console.WriteLine($"Linhas afetadas: {rowsAffecteds}");
-            }
-        }
-
-        public static void DeleteUser(int id)
-        {
-            using (var connection = new SqlConnection(CONNECTION_STRING))
-            {
-                var user = connection.Get<User>(id);
-
-                if (user != null)
-                {
-                    var rowsAffecteds = connection.Delete<User>(user);
-
-                    Console.WriteLine($"Linhas afetadas: {rowsAffecteds}");
-                }
-            }
+            var userRepository = new Repository<User>(connection);
+            userRepository.Create(user);
         }
     }
 }

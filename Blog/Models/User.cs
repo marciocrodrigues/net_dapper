@@ -1,16 +1,31 @@
 ﻿using Dapper.Contrib.Extensions;
+using System.Collections.Generic;
 
 namespace Blog.Models
 {
     [Table("[User]")]
-    public class User
+    public class User : BaseModel
     {
-        public int Id { get; set; }
+        public User()
+            => Roles = new List<Role>();
+
         public string Name { get; set; }
         public string Email { get; set; }
         public string PasswordHash { get; set; }
         public string Bio { get; set; }
         public string Image { get; set; }
         public string Slug { get; set; }
+
+        /// <summary>
+        /// Write = false para não incluir essa proprieade no insert
+        /// </summary>
+        [Write(false)]
+        public IList<Role> Roles { get; set; }
+
+        public void AddRole(Role role)
+        {
+            if (role != null)
+                Roles.Add(role);
+        }
     }
 }
