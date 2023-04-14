@@ -24,7 +24,7 @@ namespace Blog.Repositories
             _connection.Insert<TModel>(tModel);
         }
 
-        public void Update(int id, TModel tModel)
+        public void Update(TModel tModel)
         {
             if (tModel.Id != 0)
             {
