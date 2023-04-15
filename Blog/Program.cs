@@ -6,7 +6,7 @@ namespace Blog
 {
     public class Program
     {
-        private const string CONNECTION_STRING = @"Server=localhost, 1433;Database=Blog;User ID=sa;Password=Mcro@093246;TrustServerCertificate=True";
+        private static string CONNECTION_STRING = Environment.GetEnvironmentVariable("CONNECTION_STRING_SQL_SERVER", EnvironmentVariableTarget.Machine);
 
         static void Main(string[] args)
         {
