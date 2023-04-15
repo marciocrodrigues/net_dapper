@@ -6,11 +6,13 @@ namespace Blog
 {
     public class Program
     {
-        private static string CONNECTION_STRING = Environment.GetEnvironmentVariable("CONNECTION_STRING_SQL_SERVER", EnvironmentVariableTarget.Machine);
+        private static string CONNECTION_STRING_ID = Environment.GetEnvironmentVariable("CONNECTION_STRING_SQL_SERVER_ID", EnvironmentVariableTarget.Machine);
+        private static string CONNECTION_STRING_PASSWORD = Environment.GetEnvironmentVariable("CONNECTION_STRING_SQL_SERVER_PASSWORD", EnvironmentVariableTarget.Machine);
+        private static string connectionString = @$"Server=localhost, 1433;Database=Blog;User ID={CONNECTION_STRING_ID};Password={CONNECTION_STRING_PASSWORD};TrustServerCertificate=True";
 
         static void Main(string[] args)
         {
-            Database.Connection = new SqlConnection(CONNECTION_STRING);
+            Database.Connection = new SqlConnection(connectionString);
             Database.Connection.Open();
             
             Load();
